@@ -42,8 +42,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             final ListView listview = (ListView) findViewById(R.id.active_user_list);
 
-            final ActiveUserAdapter adapter = new ActiveUserAdapter(this,
-                    android.R.layout.simple_list_item_1, testArray);
+            final ActiveUserAdapter adapter = new ActiveUserAdapter(this, testArray);
 
             listview.setAdapter(adapter);
 
@@ -64,14 +63,6 @@ public class DashboardActivity extends AppCompatActivity {
                             });
                 }
             });
-
-
-//            View contentView = findViewById(R.id.content_dashboard);
-//            contentView.getSupportFragmentManager().beginTransaction();
-//            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//            ActiveUserFragment fragment = new ActiveUserFragment();
-//            transaction.replace(R.id.active_user_fragment_list, fragment);
-//            transaction.commit();
         }
     }
 

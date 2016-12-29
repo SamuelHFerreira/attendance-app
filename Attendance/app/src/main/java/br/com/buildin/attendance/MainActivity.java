@@ -14,7 +14,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void defineFlow() {
-        Intent dashboard = new Intent(MainActivity.this, DashboardActivity.class);
+//        Intent dashboard = new Intent(MainActivity.this, DashboardActivity.class);
+//        startActivity(dashboard);
+        Intent dashboard = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(dashboard);
     }
 }
