@@ -3,7 +3,7 @@
     <string name="title_activity_dashboard">Quadro de atendentes</string>
     <string name="title_activity_login">Sign in</string>
 
-    <!-- Strings related to login -->
+    <!-- Strings related to login and register-->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Senha (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -16,4 +16,7 @@
         completions."
     </string>
     <string name="title_activity_register">Cadastre um novo atendente</string>
+
+    <!-- Strings related to Dashboard -->
+    <string name="default_text_empty_user">vazio</string>
 </resources>

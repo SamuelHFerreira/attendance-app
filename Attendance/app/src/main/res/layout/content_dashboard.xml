@@ -13,4 +13,22 @@
     tools:context="br.com.buildin.attendance.DashboardActivity"
     tools:showIn="@layout/activity_dashboard">
 
+    <!--<fragment android:name="br.com.buildin.attendance.fragment.ActiveUserFragment"-->
+        <!--android:id="@+id/list"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="match_parent" />-->
+    <!--<FrameLayout-->
+        <!--android:id="@+id/active_user_fragment"-->
+        <!--android:layout_weight="2"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0px" />-->
+
+    <ListView
+        android:id="@+id/active_user_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true" />
+
+
 </RelativeLayout>
