@@ -3,7 +3,6 @@ package br.com.buildin.attendance;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import br.com.buildin.attendance.adapter.ActiveUserAdapter;
-import br.com.buildin.attendance.fragment.ActiveUserFragment;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -42,7 +40,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             final ListView listview = (ListView) findViewById(R.id.active_user_list);
 
-            final ActiveUserAdapter adapter = new ActiveUserAdapter(this, testArray);
+            final ActiveUserAdapter adapter = new ActiveUserAdapter(this, testArray, this);
 
             listview.setAdapter(adapter);
 
@@ -65,5 +63,4 @@ public class DashboardActivity extends AppCompatActivity {
             });
         }
     }
-
 }
