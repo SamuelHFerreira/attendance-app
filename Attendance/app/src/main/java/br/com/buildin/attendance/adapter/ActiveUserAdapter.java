@@ -1,7 +1,7 @@
 package br.com.buildin.attendance.adapter;
 
-import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,43 +15,66 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import br.com.buildin.attendance.R;
+import br.com.buildin.attendance.model.ActiveUser;
 
 /**
  * Created by samuelferreira on 29/12/16.
  */
-public class ActiveUserAdapter extends ArrayAdapter<String> {
+public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
 
-    private final Context context;
-    private final List<String> titles;
+    private final List<ActiveUser> activeUsers;
     private final List<View> views;
-    private final Activity callingActivity;
+
+    private LayoutInflater inflator;
+    private List<ViewHolder> lstHolders;
+    private Handler mHandler = new Handler();
+    private Runnable updateRemainingTimeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (lstHolders) {
+                long currentTime = System.currentTimeMillis();
+                for (ViewHolder holder : lstHolders) {
+                    holder.updateTimeRemaining(currentTime);
+                }
+            }
+        }
+    };
 
     public ActiveUserAdapter(Context context,
-                             List<String> titles,
-                             Activity callingActivity) {
-        super(context, -1, titles);
-        this.context = context;
-        this.titles = titles;
+                             List<ActiveUser> activeUsers) {
+        super(context, -1, activeUsers);
+        this.activeUsers = activeUsers;
+        inflator = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.views = new ArrayList<>();
-        this.callingActivity = callingActivity;
+        this.lstHolders = new ArrayList<>();
+        startUpdateTimer();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.active_user_list_item, parent, false);
-        TextView firstLineTextView = (TextView) rowView.findViewById(R.id.firstLine);
-        TextView secondLineTextView = (TextView) rowView.findViewById(R.id.secondLine);
-        addTimeCounter(secondLineTextView);
-
-        ImageView avatarImageView = (ImageView) rowView.findViewById(R.id.icon);
-        firstLineTextView.setText(titles.get(position));
-        // TODO set avatar icons and ok icons according to the state
+        ViewHolder holder = null;
+        if (convertView == null) {
+            convertView = inflator.inflate(R.layout.active_user_list_item, parent, false);
+            holder = new ViewHolder();
+            holder.titleTextView = (TextView) convertView.findViewById(R.id.firstLine);
+            holder.timeCounterTextView= (TextView) convertView.findViewById(R.id.secondLine);
+            ImageView avatarImageView = (ImageView) convertView.findViewById(R.id.icon);
+            holder.titleTextView.setText(activeUsers.get(position).getTitle());
+            // TODO set avatar icons and ok icons according to the state
 //        String s = titles.get(position);
 //        imageView.setImageResource(R.drawable.no);
-        views.add(position, rowView);
-        return rowView;
+            views.add(position, convertView);
+            convertView.setTag(holder);
+            synchronized (lstHolders) {
+                lstHolders.add(holder);
+            }
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.setData(getItem(position));
+
+        return convertView;
     }
 
     public String getTimeCounterValue(int position) {
@@ -60,37 +83,37 @@ public class ActiveUserAdapter extends ArrayAdapter<String> {
         return secondLineTextView.getText().toString();
     }
 
-    private void addTimeCounter(final TextView textView) {
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+    private void startUpdateTimer() {
+        Timer tmr = new Timer();
+        tmr.schedule(new TimerTask() {
             @Override
             public void run() {
-                callingActivity.runOnUiThread(new Runnable()
-                {
-                    int count = 0;
-
-                    @Override
-                    public void run()
-                    {
-                        textView.setText("count="+count);
-                        count++;
-                    }
-                });
+                mHandler.post(updateRemainingTimeRunnable);
             }
         }, 1000, 1000);
-        // TODO if want to stop
-//        T.cancel();
+    }
+}
+
+class ViewHolder {
+    TextView titleTextView;
+    TextView timeCounterTextView;
+    ActiveUser activeUser;
+
+    public void setData(ActiveUser item) {
+        activeUser = item;
+        titleTextView.setText(item.getTitle());
+        updateTimeRemaining(System.currentTimeMillis());
     }
 
-//    @Override
-//    public long getItemId(int position) {
-//        String item = getItem(position);
-//        return mIdMap.get(item);
-//    }
-//
-//    @Override
-//    public boolean hasStableIds() {
-//        return true;
-//    }
+    public void updateTimeRemaining(long currentTime) {
+        long timeDiff = currentTime - activeUser.getStartTimestamp();
+        if (timeDiff > 0) {
+            int seconds = (int) (timeDiff / 1000) % 60;
+            int minutes = (int) ((timeDiff / (1000 * 60)) % 60);
+            int hours = (int) ((timeDiff / (1000 * 60 * 60)) % 24);
+            timeCounterTextView.setText(hours + " hrs " + minutes + " mins " + seconds + " seg");
+        } else {
+            timeCounterTextView.setText("--");
+        }
+    }
 }

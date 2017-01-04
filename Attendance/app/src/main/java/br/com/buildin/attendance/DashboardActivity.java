@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import br.com.buildin.attendance.adapter.ActiveUserAdapter;
+import br.com.buildin.attendance.model.ActiveUser;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -35,12 +36,14 @@ public class DashboardActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
 
-            final ArrayList<String> testArray = new ArrayList<>(
-                    Arrays.asList("Junior 1", "Junior 2", "johny"));
+            final ArrayList<ActiveUser> testArray = new ArrayList<>(
+                    Arrays.asList(new ActiveUser("Junior 1", System.currentTimeMillis()),
+                                  new ActiveUser("Junior 2", System.currentTimeMillis()),
+                                  new ActiveUser("johny", System.currentTimeMillis())));
 
             final ListView listview = (ListView) findViewById(R.id.active_user_list);
 
-            final ActiveUserAdapter adapter = new ActiveUserAdapter(this, testArray, this);
+            final ActiveUserAdapter adapter = new ActiveUserAdapter(this, testArray);
 
             listview.setAdapter(adapter);
 
