@@ -83,6 +83,15 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
         return secondLineTextView.getText().toString();
     }
 
+    public void finishSessionButtonHandler(View view) {
+
+
+    }
+
+    public void removeVendorButtonHandler(View view) {
+
+    }
+
     private void startUpdateTimer() {
         Timer tmr = new Timer();
         tmr.schedule(new TimerTask() {
