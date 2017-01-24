@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:padding="@dimen/content_padding_normal">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        <CheckBox
+            android:id="@+id/has_bought_something"
+            android:text="@string/has_bought_something"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:layout_alignParentTop="true"
+            />
+
+        <CheckBox
+            android:id="@+id/has_tested_product"
+            android:text="@string/has_tested_product"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:layout_toEndOf="@id/has_bought_something"
+            android:layout_alignParentTop="true"/>
+
+        <TextView
+            android:id="@+id/purchase_value_label"
+            android:layout_width="fill_parent"
+            android:layout_height="26dip"
+            android:ellipsize="marquee"
+            android:text="@string/purchase_value"
+            android:textSize="12sp"
+            android:layout_below="@id/has_bought_something"/>
+
+        <EditText
+            android:id="@+id/purchase_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:text="R$ 0,0"
+            android:ems="10"
+            android:layout_below="@+id/purchase_value_label"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/description_text"
+            android:layout_width="fill_parent"
+            android:layout_marginTop="40dp"
+            android:hint="@string/finish_session_description"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:layout_below="@id/purchase_value"
+            android:layout_height="wrap_content" />
+
+
+        <!--<android.support.design.widget.TextInputLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_below="@id/input"-->
+            <!--android:gravity="bottom"-->
+        <!--&gt;-->
+
+        <!--</android.support.design.widget.TextInputLayout>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/has_bought_something"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="26dip"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:ellipsize="marquee"-->
+            <!--android:text="@string/has_bought_something"-->
+            <!--android:textSize="12sp"-->
+            <!--android:layout_alignTop="@id/input"-->
+            <!--/>-->
+
+
+    </RelativeLayout>
+</FrameLayout>

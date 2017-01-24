@@ -4,8 +4,11 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.util.List;
 
@@ -56,11 +59,13 @@ public class AttendanceService {
     }
 
     public static void finishSession(FinishSessionForm form) {
-        JSONObject jsonObject = new JSONObject(form);
+        JSONObject jsonObject = objectToJSONObject(form);
+
         // TODO
-        AndroidNetworking.post(SERVICE_ENDPOINT + "/queue/remove")
-                .addJSONObjectBody(new JSONObject(form))
+        AndroidNetworking.post(SERVICE_ENDPOINT + "/queue/finish")
+                .addJSONObjectBody(jsonObject)
                 .setTag("test")
+                .addJSONObjectBody(jsonObject)
                 .setPriority(Priority.MEDIUM)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -97,5 +102,16 @@ public class AttendanceService {
                 });
 
         return null;
+    }
+
+    public static JSONObject objectToJSONObject(Object object){
+        JSONObject result = null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            result = new JSONObject(mapper.writeValueAsString(object));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return result;
     }
 }

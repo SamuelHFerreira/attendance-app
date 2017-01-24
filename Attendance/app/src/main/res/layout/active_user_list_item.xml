@@ -40,7 +40,6 @@
 
     <Button
         android:id="@+id/remove_user"
-        style="@style/Widget.AppCompat.Button"
         android:background="@drawable/ic_remove_user"
         android:layout_width="50dip"
         android:layout_height="50dip"
@@ -51,14 +50,12 @@
 
     <Button
         android:id="@+id/finish_attendance"
-        style="@style/Widget.AppCompat.Button"
         android:background="@drawable/ic_finish_attendance"
         android:layout_width="50dip"
         android:layout_height="50dip"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/remove_user"
-        android:layout_toStartOf="@+id/remove_user"
-        android:onClick="finishSessionButtonHandler"/>
+        android:layout_toStartOf="@+id/remove_user" />
 
 
 </RelativeLayout>

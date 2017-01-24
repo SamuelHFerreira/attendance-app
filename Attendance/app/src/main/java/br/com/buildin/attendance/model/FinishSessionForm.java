@@ -13,6 +13,15 @@ public class FinishSessionForm implements Serializable {
     private boolean hasTestedProduct;
     private BigDecimal purchaseValue;
     private Integer sessionTimeSeconds;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public boolean isHasBoughtSomething() {
         return hasBoughtSomething;

@@ -19,4 +19,10 @@
 
     <!-- Strings related to Dashboard -->
     <string name="default_text_empty_user">vazio</string>
+
+    <string name="finish_session_description">descrição do atendimento:</string>
+    <string name="has_bought_something">Comprou?</string>
+    <string name="has_tested_product">Experimentou algo?</string>
+    <string name="purchase_value">Valor da compra:</string>
+
 </resources>
