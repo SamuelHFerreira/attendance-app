@@ -151,12 +151,11 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     private BigDecimal parseString(String value) {
         BigDecimal result = null;
         try {
-            value = value.replace("$", "");
-            value = value.replace("R", "");
+            value = value.replace("R$", "");
             value = value.replace(".", "");
             DecimalFormatSymbols symbols = new DecimalFormatSymbols();
             symbols.setDecimalSeparator(',');
-            String pattern = "#.#";
+            String pattern = "#,#";
             DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
             decimalFormat.setParseBigDecimal(true);
             result = (BigDecimal) decimalFormat.parse(value);

@@ -40,7 +40,7 @@ android:padding="@dimen/content_padding_normal">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:text="R$ 0,0"
+            android:text="R$0,0"
             android:ems="10"
             android:layout_below="@+id/purchase_value_label"
             />

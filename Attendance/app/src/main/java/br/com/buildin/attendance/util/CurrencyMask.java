@@ -5,6 +5,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import java.util.Locale;
+
 /**
  * Created by samuelferreira on 24/01/17.
  */
@@ -18,7 +20,8 @@ public class CurrencyMask implements TextWatcher {
     }
 
     private boolean isUpdating = false;
-    private NumberFormat nf = NumberFormat.getCurrencyInstance();
+    private Locale ptBr = new Locale("pt", "BR");
+    private NumberFormat nf = NumberFormat.getCurrencyInstance(ptBr);
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before,
