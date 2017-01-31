@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,6 +127,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                Log.v("adapter", "finished modal");
                 FinishSessionForm form = new FinishSessionForm();
                 form.setDescription(descriptionText.getText().toString());
                 form.setHasBoughtSomething(hasBoughtCheckBox.isChecked());
