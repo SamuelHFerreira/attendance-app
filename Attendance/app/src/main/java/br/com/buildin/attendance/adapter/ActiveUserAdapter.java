@@ -110,7 +110,6 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     public void finishSessionButtonHandler(View view, ViewGroup parent) {
         Snackbar.make(view, "Finalizar atendimento", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
-//
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Finalizar atendimento");

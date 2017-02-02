@@ -23,12 +23,13 @@ import br.com.buildin.attendance.model.UserResponse;
 
 public class AttendanceService {
     private static final String LOG = "AttendanceService";
-    private static final String SERVICE_ENDPOINT = "http://192.168.0.10:3333";
+    private static final String SERVICE_ENDPOINT = "http://192.168.0.23:3333";
 
     private static final String CREATE_USER_ENDPOINT = "/seller/create";
     private static final String QUEUE_ADD_ENDPOINT = "/queue/add";
     private static final String FINISH_ATTENDANCE_ENDPOINT = "/close-attendance";
     private static final String SELLERS_ENDPOINT = "/sellers";
+    private static final String START_ATTENDANCE_ENDPOINT = "/start-attendance";
     private static final String ATTENDANCE_DETAIL_ENDPOINT = "/attendance/by-user";
 
     public static void loginOrCreateUser(String name, String password) {
@@ -37,18 +38,32 @@ public class AttendanceService {
                 .setTag("test")
                 .setPriority(Priority.MEDIUM)
                 .build()
-
-
-
-
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        // do anything with response
+                        Log.v(LOG,"sucess login:"+ response.toString());
                     }
                     @Override
                     public void onError(ANError error) {
-                        // handle error
+                        Log.v(LOG,"error: "+ error.toString());
+                    }
+                });
+    }
+
+    public static void startAttendance(Long attendanceId) {
+        AndroidNetworking.post(SERVICE_ENDPOINT + START_ATTENDANCE_ENDPOINT)
+                .addBodyParameter("id", attendanceId.toString())
+                .setTag("test")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v(LOG,"sucess started attendance:"+ response.toString());
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.v(LOG,"error: "+ error.toString());
                     }
                 });
     }
@@ -63,10 +78,12 @@ public class AttendanceService {
                     @Override
                     public void onResponse(JSONObject response) {
                         // do anything with response
+                        Log.v(LOG,"sucess added user to queue:"+ response.toString());
                     }
                     @Override
                     public void onError(ANError error) {
                         // handle error
+                        Log.v(LOG,"error: "+ error.toString());
                     }
                 });
     }
@@ -89,7 +106,6 @@ public class AttendanceService {
                     }
                     @Override
                     public void onError(ANError error) {
-                        // handle error
                         Log.v(LOG,"error finish: "+ error.toString());
                     }
                 });
@@ -109,10 +125,11 @@ public class AttendanceService {
                     @Override
                     public void onResponse(JSONObject response) {
                         // do anything with response
+                        Log.v(LOG,"sucess list queued users:"+ response.toString());
                     }
                     @Override
                     public void onError(ANError error) {
-                        // handle error
+                        Log.v(LOG,"error: "+ error.toString());
                     }
                 });
 

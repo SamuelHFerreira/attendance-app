@@ -5,6 +5,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import java.text.ParseException;
 import java.util.Locale;
 
 /**
@@ -20,8 +21,7 @@ public class CurrencyMask implements TextWatcher {
     }
 
     private boolean isUpdating = false;
-    private Locale ptBr = new Locale("pt", "BR");
-    private NumberFormat nf = NumberFormat.getCurrencyInstance(ptBr);
+
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before,
@@ -41,10 +41,14 @@ public class CurrencyMask implements TextWatcher {
         }
 
         try {
+            Locale ptBr = new Locale("pt", "BR");
+            NumberFormat nf = NumberFormat.getCurrencyInstance(ptBr);
             str = nf.format(Double.parseDouble(str) / 100);
             campo.setText(str);
             campo.setSelection(campo.getText().length());
         } catch (NumberFormatException e) {
+            s = "";
+        } catch (Exception e) {
             s = "";
         }
     }
