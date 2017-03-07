@@ -5,10 +5,12 @@ package br.com.buildin.attendance.model;
  */
 
 public class ActiveUser {
-    private String title;
+    private long id;
     private long startTimestamp;
+    private String title;
 
-    public ActiveUser(String title, long startTimestamp) {
+    public ActiveUser(String title, long startTimestamp, long id) {
+        this.id = id;
         this.title = title;
         this.startTimestamp = startTimestamp;
     }
@@ -27,5 +29,13 @@ public class ActiveUser {
 
     public void setStartTimestamp(long startTimestamp) {
         this.startTimestamp = startTimestamp;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

@@ -52,6 +52,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
             }
         }
     };
+    private boolean isSessionActive = false;
 
     public ActiveUserAdapter(Context context,
                              List<ActiveUser> activeUsers) {
@@ -73,18 +74,24 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
             holder.titleTextView = (TextView) convertView.findViewById(R.id.firstLine);
             holder.timeCounterTextView= (TextView) convertView.findViewById(R.id.secondLine);
             ImageView avatarImageView = (ImageView) convertView.findViewById(R.id.icon);
-            Button finishSessionButton = (Button) convertView.findViewById(R.id.finish_attendance);
+            final Button finishSessionButton = (Button) convertView.findViewById(R.id.finish_attendance);
 
             final ViewGroup parentView = parent;
-            finishSessionButton.setOnClickListener(new View.OnClickListener()  {
+            final int positionItem = position;
 
+            finishSessionButton.setOnClickListener(new View.OnClickListener()  {
                 @Override
                 public void onClick(View v) {
-                    finishSessionButtonHandler(v, parentView);
+                    sessionButtonHandler(v, parentView, positionItem);
+                    if (isSessionActive)
+                        finishSessionButton.setBackgroundResource(R.drawable.ic_finish_attendance);
+                    else
+                        finishSessionButton.setBackgroundResource(R.drawable.ic_start_attendance);
+
                 }
             });
 
-            holder.titleTextView.setText(activeUsers.get(position).getTitle());
+//            holder.titleTextView.setText(activeUsers.get(position).getTitle());
             // TODO set avatar icons and ok icons according to the state
 //        String s = titles.get(position);
 //        imageView.setImageResource(R.drawable.no);
@@ -107,7 +114,14 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
         return secondLineTextView.getText().toString();
     }
 
-    public void finishSessionButtonHandler(View view, ViewGroup parent) {
+    public void sessionButtonHandler(View view, ViewGroup parent, int position) {
+        if (isSessionActive)
+            finishSessionAction(view, parent, position);
+        else
+            startSessionAction(view, parent, position);
+    }
+
+    private void finishSessionAction(View view, ViewGroup parent, int position) {
         Snackbar.make(view, "Finalizar atendimento", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
 
@@ -132,12 +146,16 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 form.setHasBoughtSomething(hasBoughtCheckBox.isChecked());
                 form.setHasTestedProduct(testedProductCheckBox.isChecked());
                 form.setPurchaseValue(parseString(finalPurchaseText.getText().toString()));
+
+                // TODO get id from somewhere
                 AttendanceService.finishSession(form);
+                isSessionActive = false;
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                isSessionActive = true;
                 dialog.cancel();
             }
         });
@@ -145,7 +163,14 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
         builder.show();
     }
 
+    private void startSessionAction(View view, ViewGroup parent, int position) {
+        AttendanceService.startAttendance(getItem(position).getId());
+        isSessionActive = true;
+    }
+
     public void removeVendorButtonHandler(View view) {
+
+        //TODO  Logout
 
     }
 
