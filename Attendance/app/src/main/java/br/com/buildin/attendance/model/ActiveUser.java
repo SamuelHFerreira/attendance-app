@@ -1,5 +1,7 @@
 package br.com.buildin.attendance.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by samuelferreira on 03/01/17.
  */

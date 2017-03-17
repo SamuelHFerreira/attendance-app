@@ -83,10 +83,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 @Override
                 public void onClick(View v) {
                     sessionButtonHandler(v, parentView, positionItem);
-                    if (isSessionActive)
-                        finishSessionButton.setBackgroundResource(R.drawable.ic_finish_attendance);
-                    else
-                        finishSessionButton.setBackgroundResource(R.drawable.ic_start_attendance);
+                    swichStartButtonBackground(finishSessionButton);
 
                 }
             });
@@ -108,6 +105,13 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
         return convertView;
     }
 
+    private void swichStartButtonBackground(View finishSessionButton) {
+        if (isSessionActive)
+            finishSessionButton.setBackgroundResource(R.drawable.ic_finish_attendance);
+        else
+            finishSessionButton.setBackgroundResource(R.drawable.ic_start_attendance);
+    }
+
     public String getTimeCounterValue(int position) {
         View rowView = views.get(position);
         TextView secondLineTextView = (TextView) rowView.findViewById(R.id.secondLine);
@@ -121,7 +125,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
             startSessionAction(view, parent, position);
     }
 
-    private void finishSessionAction(View view, ViewGroup parent, int position) {
+    private void finishSessionAction(final View view, ViewGroup parent, int position) {
         Snackbar.make(view, "Finalizar atendimento", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
 
@@ -150,12 +154,14 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 // TODO get id from somewhere
                 AttendanceService.finishSession(form);
                 isSessionActive = false;
+                swichStartButtonBackground(view);
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 isSessionActive = true;
+                swichStartButtonBackground(view);
                 dialog.cancel();
             }
         });
@@ -166,6 +172,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     private void startSessionAction(View view, ViewGroup parent, int position) {
         AttendanceService.startAttendance(getItem(position).getId());
         isSessionActive = true;
+        swichStartButtonBackground(view);
     }
 
     public void removeVendorButtonHandler(View view) {
