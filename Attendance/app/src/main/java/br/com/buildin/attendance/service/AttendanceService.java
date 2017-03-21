@@ -1,15 +1,25 @@
 package br.com.buildin.attendance.service;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.json.JSONObject;
 
 import java.util.List;
 
+import br.com.buildin.attendance.MainActivity;
+import br.com.buildin.attendance.adapter.ActiveUserAdapter;
+import br.com.buildin.attendance.model.ActiveUser;
 import br.com.buildin.attendance.model.FinishSessionForm;
 import br.com.buildin.attendance.model.UserResponse;
+import br.com.buildin.attendance.service.body.LoginBody;
+import br.com.buildin.attendance.service.body.StartQueueBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,147 +27,180 @@ import retrofit2.Response;
 /**
  * Created by samuelferreira on 29/12/16.
  */
-
 public class AttendanceService {
+
+    private Context workingContext;
+    private KProgressHUD workingHud;
+    private QueueService service;
+
     private static final String LOG = "AttendanceService";
-    public static final String SERVICE_ENDPOINT = "http://horadavez.com.br:80";
 
-    private static final String CREATE_USER_ENDPOINT = "/seller/create";
-    private static final String QUEUE_ADD_ENDPOINT = "/queue/add";
-    private static final String FINISH_ATTENDANCE_ENDPOINT = "/close-attendance";
-    private static final String SELLERS_ENDPOINT = "/sellers";
-    private static final String START_ATTENDANCE_ENDPOINT = "/start-attendance";
-    private static final String ATTENDANCE_DETAIL_ENDPOINT = "/attendance/by-user";
-
-    public static void loginOrCreateUser(String name, String password) {
-//        AndroidNetworking.post(SERVICE_ENDPOINT + CREATE_USER_ENDPOINT)
-//                .addBodyParameter("name", "Afonso Jorge")
-//                .setTag("test")
-//                .setPriority(Priority.MEDIUM)
-//                .build()
-//                .getAsJSONObject(new JSONObjectRequestListener() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.v(LOG, "sucess login:" + response.toString());
-//                    }
-//
-//                    @Override
-//                    public void onError(ANError error) {
-//                        Log.v(LOG, "error: " + error.toString());
-//                    }
-//                });
+    private AttendanceService(Context context) {
+        this.workingContext = context;
+        this.service = ApiRetrofitClient.getClient().create(QueueService.class);
     }
 
-    public static void startAttendance(Long attendanceId) {
-//        AndroidNetworking.post(SERVICE_ENDPOINT + START_ATTENDANCE_ENDPOINT)
-//                .addBodyParameter("id", attendanceId.toString())
-//                .setTag("test")
-//                .setPriority(Priority.MEDIUM)
-//                .build()
-//                .getAsJSONObject(new JSONObjectRequestListener() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.v(LOG, "sucess started attendance:" + response.toString());
-//                    }
-//
-//                    @Override
-//                    public void onError(ANError error) {
-//                        Log.v(LOG, "error: " + error.toString());
-//                    }
-//                });
+    public static AttendanceService instance(Context context) {
+        return new AttendanceService(context);
     }
 
-    public static void addUserToQueue(String name) {
-//        AndroidNetworking.post(SERVICE_ENDPOINT + QUEUE_ADD_ENDPOINT)
-//                .addBodyParameter("name", "Afonso Jorge")
-//                .setTag("test")
-//                .setPriority(Priority.MEDIUM)
-//                .build()
-//                .getAsJSONObject(new JSONObjectRequestListener() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        // do anything with response
-//                        Log.v(LOG, "sucess added user to queue:" + response.toString());
-//                    }
-//
-//                    @Override
-//                    public void onError(ANError error) {
-//                        // handle error
-//                        Log.v(LOG, "error: " + error.toString());
-//                    }
-//                });
+    public void loginOrCreateUser(String name, String password) {
+        Call<Void> call = this.service.createOrLogin(new LoginBody(name, password));
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.body() != null) {
+                    // TODO return true or false or something
+                    Log.v(LOG, "sucess login:" + response.body().toString());
+                }
+                stopDefaultLoading();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //Handle failure
+                Log.v(LOG, "error: " + t.toString());
+                stopDefaultLoading();
+            }
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
     }
 
-    public static void finishSession(FinishSessionForm form) {
-        JSONObject jsonObject = objectToJSONObject(form);
+    public void startAttendance(Long attendanceId) {
+        Call<Void> call = this.service.startAttendance(new StartQueueBody(attendanceId));
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.body() != null) {
+                    Log.v(LOG, "sucess started attendance:" + response.body().toString());
+                }
+                stopDefaultLoading();
+            }
 
-        // TODO
-//        AndroidNetworking.post(SERVICE_ENDPOINT + FINISH_ATTENDANCE_ENDPOINT)
-//                .addJSONObjectBody(jsonObject)
-//                .setTag("test")
-//                .addJSONObjectBody(jsonObject)
-//                .setPriority(Priority.MEDIUM)
-//                .build()
-//                .getAsJSONObject(new JSONObjectRequestListener() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        // do anything with response
-//                        Log.v(LOG, "sucess finish:" + response.toString());
-//                    }
-//
-//                    @Override
-//                    public void onError(ANError error) {
-//                        Log.v(LOG, "error finish: " + error.toString());
-//                    }
-//                });
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //Handle failure
+                Log.v(LOG, "error: " + t.toString());
+                stopDefaultLoading();
+            }
+
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
     }
 
-    public static void logoutUser(String name) {
-        // TODO
+    public void addUserToQueue(String name) {
+        Call<Void> call = this.service.addUserToQueue(name);
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.body() != null) {
+                    Log.v(LOG, "sucess added user to queue:" + response.body().toString());
+                }
+                stopDefaultLoading();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //Handle failure
+                stopDefaultLoading();
+            }
+
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
     }
 
-    public static List<UserResponse> listQueueUsers(View view) {
-//        QueueService service = ApiRetrofitClient.getClient().create(QueueService.class);
-//        List<UserResponse> responseResult = null;
-//
-//        Call<List<UserResponse>> call = service.listQueuedUsers();
-//        Callback<List<UserResponse>> callback = new Callback<List<UserResponse>>() {
-//            @Override
-//            public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
-//                responseResult = response.body();
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<UserResponse>> call, Throwable t) {
-//                //Handle failure
-//            }
-//        };
-//        call.enqueue(callback);
+    public void finishSession(FinishSessionForm form) {
+//        JSONObject jsonObject = objectToJSONObject(form);
 
-    return null;
+        Call<Void> call = this.service.finishSession(form);
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.body() != null) {
+                    Log.v(LOG, "sucess finish:" + response.body().toString());
+                }
+                stopDefaultLoading();
+            }
 
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //Handle failure
+                stopDefaultLoading();
+            }
 
-//        AndroidNetworking.get(SERVICE_ENDPOINT + SELLERS_ENDPOINT)
-//                .setPriority(Priority.MEDIUM)
-//                .build()
-//                .getAsJSONArray(new JSONArrayRequestListener() {
-//                    @Override
-//                    public void onResponse(JSONArray response) {
-//                        // do anything with response
-//                    }
-//                    @Override
-//                    public void onError(ANError error) {
-//                        // handle error
-//                    }
-//                });
-
-
-
-//        return null;
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
     }
 
-    public static JSONObject objectToJSONObject(Object object) {
+    public void logoutUser(Long attendanceId) {
+        Call<Void> call = this.service.removeUserOfQueue(attendanceId);
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.body() != null) {
+
+                }
+                stopDefaultLoading();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //Handle failure
+                stopDefaultLoading();
+            }
+
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
+
+    }
+
+    public void listQueueUsers(final ListView listview, final List<ActiveUser> activeUsers, final ActiveUserAdapter adapter) {
+        Call<List<UserResponse>> call = this.service.listQueuedUsers();
+        Callback<List<UserResponse>> callback = new Callback<List<UserResponse>>() {
+            @Override
+            public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
+                if (response.body() != null)
+                    for (UserResponse userResponse : response.body()) {
+                        activeUsers.add(new ActiveUser(userResponse.getName(), System.currentTimeMillis(), userResponse.getId()));
+                    }
+                listview.setAdapter(adapter);
+                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, final View view,
+                                            int position, long id) {
+                        final String item = (String) parent.getItemAtPosition(position);
+                        view.animate().setDuration(2000).alpha(0)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        activeUsers.remove(item);
+                                        adapter.notifyDataSetChanged();
+                                        view.setAlpha(1);
+                                    }
+                                });
+                    }
+                });
+                stopDefaultLoading();
+            }
+
+            @Override
+            public void onFailure(Call<List<UserResponse>> call, Throwable t) {
+                //Handle failure
+                stopDefaultLoading();
+            }
+
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
+    }
+
+    private JSONObject objectToJSONObject(Object object) {
         JSONObject result = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -166,5 +209,19 @@ public class AttendanceService {
             exception.printStackTrace();
         }
         return result;
+    }
+
+    private void createDefaultLoading() {
+        workingHud = KProgressHUD.create(workingContext)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel("Please wait")
+                .setCancellable(false)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f)
+                .show();
+    }
+
+    private void stopDefaultLoading() {
+        workingHud.dismiss();
     }
 }

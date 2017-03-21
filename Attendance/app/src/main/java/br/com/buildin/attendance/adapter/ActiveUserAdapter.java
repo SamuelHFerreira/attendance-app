@@ -152,7 +152,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 form.setPurchaseValue(parseString(finalPurchaseText.getText().toString()));
 
                 // TODO get id from somewhere
-                AttendanceService.finishSession(form);
+                AttendanceService.instance(getContext()).finishSession(form);
                 isSessionActive = false;
                 swichStartButtonBackground(view);
             }
@@ -170,7 +170,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     }
 
     private void startSessionAction(View view, ViewGroup parent, int position) {
-        AttendanceService.startAttendance(getItem(position).getId());
+        AttendanceService.instance(parent.getContext()).startAttendance(getItem(position).getId());
         isSessionActive = true;
         swichStartButtonBackground(view);
     }

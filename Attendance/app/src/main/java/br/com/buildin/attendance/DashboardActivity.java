@@ -49,54 +49,12 @@ public class DashboardActivity extends AppCompatActivity {
 //                            new ActiveUser("Junior 2", System.currentTimeMillis(), 2l),
 //                            new ActiveUser("johny", System.currentTimeMillis(), 3l)));
 
+            final ListView listview = (ListView) findViewById(R.id.active_user_list);
             final List<ActiveUser> activeUsers = new ArrayList<>();
-            QueueService service = ApiRetrofitClient.getClient().create(QueueService.class);
+            final ActiveUserAdapter adapter = new ActiveUserAdapter(getApplicationContext(), activeUsers);
 
-            Call<List<UserResponse>> call = service.listQueuedUsers();
-            Callback<List<UserResponse>> callback = new Callback<List<UserResponse>>() {
-                @Override
-                public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
-                    if (response.body() != null)
-                        for (UserResponse userResponse: response.body()) {
-                            activeUsers.add(new ActiveUser(userResponse.getName(), System.currentTimeMillis(), userResponse.getId()));
-                        }
-                    final ListView listview = (ListView) findViewById(R.id.active_user_list);
-
-                    final ActiveUserAdapter adapter = new ActiveUserAdapter(getApplicationContext(), activeUsers);
-
-                    listview.setAdapter(adapter);
-
-                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, final View view,
-                                                int position, long id) {
-                            final String item = (String) parent.getItemAtPosition(position);
-                            view.animate().setDuration(2000).alpha(0)
-                                    .withEndAction(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            activeUsers.remove(item);
-                                            adapter.notifyDataSetChanged();
-                                            view.setAlpha(1);
-                                        }
-                                    });
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Call<List<UserResponse>> call, Throwable t) {
-                    //Handle failure
-                }
-            };
-            call.enqueue(callback);
-
-
-
-
-
-
+            AttendanceService.instance(this).listQueueUsers(listview, activeUsers, adapter);
         }
     }
+
 }
