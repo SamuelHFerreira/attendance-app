@@ -19,6 +19,7 @@ import br.com.buildin.attendance.model.ActiveUser;
 import br.com.buildin.attendance.model.FinishSessionForm;
 import br.com.buildin.attendance.model.UserResponse;
 import br.com.buildin.attendance.service.body.LoginBody;
+import br.com.buildin.attendance.service.body.QueueBody;
 import br.com.buildin.attendance.service.body.StartQueueBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,7 +68,7 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    public void startAttendance(Long attendanceId) {
+    public void startAttendance(Long attendanceId, final ActiveUserAdapter adapter, final View view, final Integer positionItem) {
         Call<Void> call = this.service.startAttendance(new StartQueueBody(attendanceId));
         Callback<Void> callback = new Callback<Void>() {
             @Override
@@ -75,6 +76,8 @@ public class AttendanceService {
                 if (response.body() != null) {
                     Log.v(LOG, "sucess started attendance:" + response.body().toString());
                 }
+                adapter.getItem(positionItem).setOnAttendance(true);
+                adapter.swichStartButtonBackground(view, positionItem);
                 stopDefaultLoading();
             }
 
@@ -90,8 +93,8 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    public void addUserToQueue(String name) {
-        Call<Void> call = this.service.addUserToQueue(name);
+    public void addUserToQueue(Long sellerId) {
+        Call<Void> call = this.service.addUserToQueue(new QueueBody(sellerId));
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -113,14 +116,12 @@ public class AttendanceService {
     }
 
     public void finishSession(FinishSessionForm form) {
-//        JSONObject jsonObject = objectToJSONObject(form);
-
         Call<Void> call = this.service.finishSession(form);
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.body() != null) {
-                    Log.v(LOG, "sucess finish:" + response.body().toString());
+                if (response.isSuccessful()) {
+                    Log.v(LOG, "sucess finish:");
                 }
                 stopDefaultLoading();
             }
@@ -136,13 +137,13 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    public void logoutUser(Long attendanceId) {
-        Call<Void> call = this.service.removeUserOfQueue(attendanceId);
+    public void logoutUser(Long sellerId) {
+        Call<Void> call = this.service.removeUserOfQueue(new QueueBody(sellerId));
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.body() != null) {
-
+                if (response.isSuccessful()) {
+                    Log.v(LOG, "sucess on remove");
                 }
                 stopDefaultLoading();
             }
@@ -166,7 +167,7 @@ public class AttendanceService {
             public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
                 if (response.body() != null)
                     for (UserResponse userResponse : response.body()) {
-                        activeUsers.add(new ActiveUser(userResponse.getName(), System.currentTimeMillis(), userResponse.getId()));
+                        activeUsers.add(new ActiveUser(userResponse.getName(), System.currentTimeMillis(), userResponse.getId(), false));
                     }
                 listview.setAdapter(adapter);
                 listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -200,22 +201,11 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    private JSONObject objectToJSONObject(Object object) {
-        JSONObject result = null;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            result = new JSONObject(mapper.writeValueAsString(object));
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        return result;
-    }
-
     private void createDefaultLoading() {
         workingHud = KProgressHUD.create(workingContext)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setLabel("Please wait")
-                .setCancellable(false)
+                .setCancellable(true)
                 .setAnimationSpeed(2)
                 .setDimAmount(0.5f)
                 .show();

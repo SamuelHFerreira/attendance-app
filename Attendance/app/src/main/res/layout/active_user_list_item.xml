@@ -47,12 +47,11 @@
         android:layout_height="50dip"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="removeVendorButtonHandler"/>
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:id="@+id/finish_attendance"
-        android:background="@drawable/ic_finish_attendance"
+        android:background="@drawable/ic_start_attendance"
         android:layout_width="50dip"
         android:layout_height="50dip"
         android:layout_alignParentTop="true"

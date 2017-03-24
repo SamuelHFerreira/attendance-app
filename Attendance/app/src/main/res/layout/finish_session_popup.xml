@@ -11,6 +11,7 @@ android:padding="@dimen/content_padding_normal">
         <CheckBox
             android:id="@+id/has_bought_something"
             android:text="@string/has_bought_something"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_weight="1"
@@ -20,6 +21,7 @@ android:padding="@dimen/content_padding_normal">
         <CheckBox
             android:id="@+id/has_tested_product"
             android:text="@string/has_tested_product"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_weight="1"
@@ -32,6 +34,7 @@ android:padding="@dimen/content_padding_normal">
             android:layout_height="26dip"
             android:ellipsize="marquee"
             android:text="@string/purchase_value"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="12sp"
             android:layout_below="@id/has_bought_something"/>
 
@@ -40,6 +43,7 @@ android:padding="@dimen/content_padding_normal">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="text"
+            android:textColor="@color/colorPrimaryDark"
             android:text="R$0,0"
             android:ems="10"
             android:layout_below="@+id/purchase_value_label"
@@ -50,33 +54,11 @@ android:padding="@dimen/content_padding_normal">
             android:layout_width="fill_parent"
             android:layout_marginTop="40dp"
             android:hint="@string/finish_session_description"
+            android:textColor="@color/colorPrimaryDark"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:layout_below="@id/purchase_value"
             android:layout_height="wrap_content" />
-
-
-        <!--<android.support.design.widget.TextInputLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_below="@id/input"-->
-            <!--android:gravity="bottom"-->
-        <!--&gt;-->
-
-        <!--</android.support.design.widget.TextInputLayout>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/has_bought_something"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="26dip"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:ellipsize="marquee"-->
-            <!--android:text="@string/has_bought_something"-->
-            <!--android:textSize="12sp"-->
-            <!--android:layout_alignTop="@id/input"-->
-            <!--/>-->
-
 
     </RelativeLayout>
 </FrameLayout>

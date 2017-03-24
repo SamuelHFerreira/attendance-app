@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.buildin.attendance.model.FinishSessionForm;
 import br.com.buildin.attendance.model.UserResponse;
+import br.com.buildin.attendance.service.body.QueueBody;
 import br.com.buildin.attendance.service.body.LoginBody;
 import br.com.buildin.attendance.service.body.StartQueueBody;
 import retrofit2.Call;
@@ -28,17 +29,17 @@ public interface QueueService {
     @POST("start-attendance")
     Call<Void> startAttendance(@Body StartQueueBody attendanceId);
 
-    @POST("queue/add")
-    Call<Void> addUserToQueue(String name);
+    @POST("queue")
+    Call<Void> addUserToQueue(@Body QueueBody queueBody);
 
     @DELETE("queue")
-    Call<Void> removeUserOfQueue(Long attendanceId);
+    Call<Void> removeUserOfQueue(@Body QueueBody queueBody);
 
     @POST("close-attendance")
-    Call<Void> finishSession(FinishSessionForm form);
+    Call<Void> finishSession(@Body FinishSessionForm form);
 
     @GET("seller/to-leave/{attendanceId}")
     Call<Void> pauseAttendanceQueue(@Path("attendanceId") Long attendanceId);
 
-//    private static final String ATTENDANCE_DETAIL_ENDPOINT = "/attendance/by-user";
+//    private static final String ATTENDANCE_DETAIL_ENDPOINT = "/attendance/by-user"; 
 }
