@@ -1,5 +1,6 @@
 package br.com.buildin.attendance;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -32,15 +33,7 @@ public class DashboardActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO if max user reached
-                Snackbar.make(view, "Número máximo de usuários atingido", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        final List<ActiveUser> activeUsers = new ArrayList<>();
 
         if (savedInstanceState == null) {
 
@@ -50,11 +43,23 @@ public class DashboardActivity extends AppCompatActivity {
 //                            new ActiveUser("johny", System.currentTimeMillis(), 3l)));
 
             final ListView listview = (ListView) findViewById(R.id.active_user_list);
-            final List<ActiveUser> activeUsers = new ArrayList<>();
             final ActiveUserAdapter adapter = new ActiveUserAdapter(getApplicationContext(), activeUsers);
 
             AttendanceService.instance(this).listQueueUsers(listview, activeUsers, adapter);
         }
-    }
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (activeUsers.size() >= 10)
+                    Snackbar.make(view, "Número máximo de usuários atingido", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                else {
+                    Intent loginActivity = new Intent(DashboardActivity.this, LoginActivity.class);
+                    startActivity(loginActivity);
+                }
+            }
+        });
+    }
 }

@@ -36,8 +36,8 @@ public class AttendanceService {
 
     private static final String LOG = "AttendanceService";
 
-    private AttendanceService(Context context) {
-        this.workingContext = context;
+    private AttendanceService(Context coworkingContextntext) {
+        this.workingContext = coworkingContextntext;
         this.service = ApiRetrofitClient.getClient().create(QueueService.class);
     }
 
@@ -116,7 +116,7 @@ public class AttendanceService {
     }
 
     public void finishSession(FinishSessionForm form) {
-        Call<Void> call = this.service.finishSession(form);
+        Call<Void> call = this.service.removeUserOfQueue(form.getDescription());
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -138,7 +138,7 @@ public class AttendanceService {
     }
 
     public void logoutUser(Long sellerId) {
-        Call<Void> call = this.service.removeUserOfQueue(new QueueBody(sellerId));
+        Call<Void> call = this.service.removeUserOfQueue(sellerId.toString());
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

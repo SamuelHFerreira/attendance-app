@@ -21,7 +21,7 @@ import retrofit2.http.Path;
 
 public interface QueueService {
 
-    @GET("sellers")
+    @GET("seller")
     Call<List<UserResponse>> listQueuedUsers();
 
     @POST("seller")
@@ -41,10 +41,11 @@ public interface QueueService {
     @POST("attendance")
     Call<Void> startAttendance(@Body StartQueueBody attendanceId);
 
-    @DELETE("attendance")
-    Call<Void> finishSession(@Body FinishSessionForm form);
+    // body un...
+//    @DELETE("attendance")
+//    Call<Void> finishSession(@Body FinishSessionForm form);
 
-    @GET("attendance/{attendanceId}")
+    @DELETE("attendance/{attendanceId}")
     Call<Void> logout(@Path("attendanceId") Long attendanceId);
 
 }
