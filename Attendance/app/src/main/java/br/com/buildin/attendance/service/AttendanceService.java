@@ -11,6 +11,7 @@ import com.kaopiz.kprogresshud.KProgressHUD;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 
 import br.com.buildin.attendance.MainActivity;
@@ -45,27 +46,17 @@ public class AttendanceService {
         return new AttendanceService(context);
     }
 
-    public void loginOrCreateUser(String name, String password) {
+    public boolean loginOrCreateUser(String name, String password) {
         Call<Void> call = this.service.createOrLogin(new LoginBody(name, password));
-        Callback<Void> callback = new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.body() != null) {
-                    // TODO return true or false or something
-                    Log.v(LOG, "sucess login:" + response.body().toString());
-                }
-                stopDefaultLoading();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                //Handle failure
-                Log.v(LOG, "error: " + t.toString());
-                stopDefaultLoading();
-            }
-        };
-        createDefaultLoading();
-        call.enqueue(callback);
+        try {
+            Response<Void> response = call.execute();
+            if (response.body() != null)
+                Log.v(LOG, "sucess login:" + response.body().toString());
+            return response.isSuccessful();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void startAttendance(Long attendanceId, final ActiveUserAdapter adapter, final View view, final Integer positionItem) {
