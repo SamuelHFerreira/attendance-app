@@ -26,8 +26,11 @@ import java.util.TimerTask;
 
 import br.com.buildin.attendance.R;
 import br.com.buildin.attendance.model.ActiveUser;
-import br.com.buildin.attendance.model.FinishSessionForm;
+import br.com.buildin.attendance.model.SellerStatus;
+import br.com.buildin.attendance.model.StatusSessionForm;
+import br.com.buildin.attendance.model.UserStatus;
 import br.com.buildin.attendance.service.AttendanceService;
+import br.com.buildin.attendance.service.body.SellerBody;
 import br.com.buildin.attendance.util.CurrencyMask;
 
 /**
@@ -75,6 +78,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
             ImageView avatarImageView = (ImageView) convertView.findViewById(R.id.icon);
             final Button finishSessionButton = (Button) convertView.findViewById(R.id.finish_attendance);
             final Button removeVendorButton = (Button) convertView.findViewById(R.id.remove_user);
+            final Button timeWaitButton = (Button) convertView.findViewById(R.id.wait_attendance);
 
             final ViewGroup parentView = parent;
             final int positionItem = position;
@@ -92,6 +96,14 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 @Override
                 public void onClick(View v) {
                     removeVendorButtonHandler(v, parentView, positionItem);
+
+                }
+            });
+
+            timeWaitButton.setOnClickListener(new View.OnClickListener()  {
+                @Override
+                public void onClick(View v) {
+                    timeWaitButtonHandler(v, parentView, positionItem);
 
                 }
             });
@@ -114,10 +126,15 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     }
 
     public void swichStartButtonBackground(View finishSessionButton, Integer positionItem) {
-        if (getItem(positionItem).isOnAttendance())
+        boolean shouldEnableButton = true;
+        if (getItem(positionItem).getUserStatus() == UserStatus.IN_ATTENDANCE)
             finishSessionButton.setBackgroundResource(R.drawable.ic_finish_attendance);
-        else
+        if (getItem(positionItem).getUserStatus() == UserStatus.IDLE)
             finishSessionButton.setBackgroundResource(R.drawable.ic_start_attendance);
+        if (getItem(positionItem).getUserStatus() == UserStatus.AWAY)
+            shouldEnableButton = finishSessionButton.isEnabled() ? false : true ;
+//        finishSessionButton.setActivated(shouldEnableButton);
+//        finishSessionButton.setEnabled(shouldEnableButton);
     }
 
     public String getTimeCounterValue(int position) {
@@ -127,7 +144,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     }
 
     public void sessionButtonHandler(View view, ViewGroup parent, int position) {
-        if (getItem(position).isOnAttendance())
+        if (getItem(position).getUserStatus() == UserStatus.IN_ATTENDANCE)
             finishSessionAction(view, parent, position);
         else
             startSessionAction(view, parent, position);
@@ -153,21 +170,21 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 Log.v("adapter", "finished modal");
-                FinishSessionForm form = new FinishSessionForm();
+                StatusSessionForm form = new StatusSessionForm();
                 form.setDescription(descriptionText.getText().toString());
                 form.setHasBoughtSomething(hasBoughtCheckBox.isChecked());
                 form.setHasTestedProduct(testedProductCheckBox.isChecked());
                 form.setPurchaseValue(parseString(finalPurchaseText.getText().toString()));
 
                 AttendanceService.instance(parent.getContext()).finishSession(getItem(position).getId(), form);
-                getItem(position).setOnAttendance(false);
+                getItem(position).setUserStatus(UserStatus.IDLE);
                 swichStartButtonBackground(view, position);
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                getItem(position).setOnAttendance(true);
+                getItem(position).setUserStatus(UserStatus.IN_ATTENDANCE);
                 swichStartButtonBackground(view, position);
                 dialog.cancel();
             }
@@ -180,8 +197,14 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
         AttendanceService.instance(parent.getContext()).startAttendance(getItem(position).getId(), this, view, position);
     }
 
-    public void removeVendorButtonHandler(View view, ViewGroup parent, int position) {
+    private void removeVendorButtonHandler(View view, ViewGroup parent, int position) {
         AttendanceService.instance(parent.getContext()).logoutUser(getItem(position).getId(), this, position);
+    }
+
+    private void timeWaitButtonHandler(View view, ViewGroup parent, int position) {
+        ActiveUser activeUser = getItem(position);
+        SellerStatus sellerStatusToUpdate = activeUser.getUserStatus() == UserStatus.AWAY ? SellerStatus.IN_QUEUE : SellerStatus.ABSENT;
+        AttendanceService.instance(parent.getContext()).updateSeller(activeUser.getId(), new SellerBody(sellerStatusToUpdate), this, view, position);
     }
 
     private BigDecimal parseString(String value) {
@@ -225,7 +248,7 @@ class ViewHolder {
 
     public void updateTimeRemaining(long currentTime) {
         long timeDiff = currentTime - activeUser.getStartTimestamp();
-        if (timeDiff > 0 && activeUser.isOnAttendance()) {
+        if (timeDiff > 0 && activeUser.getUserStatus() == UserStatus.IN_ATTENDANCE) {
             int seconds = (int) (timeDiff / 1000) % 60;
             int minutes = (int) ((timeDiff / (1000 * 60)) % 60);
             int hours = (int) ((timeDiff / (1000 * 60 * 60)) % 24);

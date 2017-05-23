@@ -8,13 +8,13 @@ public class ActiveUser {
     private long id;
     private long startTimestamp;
     private String title;
-    private boolean isOnAttendance;
+    private UserStatus userStatus;
 
-    public ActiveUser(String title, long startTimestamp, long id, boolean isOnAttendance) {
+    public ActiveUser(String title, long startTimestamp, long id, UserStatus userStatus) {
         this.id = id;
         this.startTimestamp = startTimestamp;
         this.title = title;
-        this.isOnAttendance = isOnAttendance;
+        this.userStatus = userStatus;
     }
 
     public long getId() {
@@ -41,11 +41,21 @@ public class ActiveUser {
         this.title = title;
     }
 
-    public boolean isOnAttendance() {
-        return isOnAttendance;
+    public UserStatus getUserStatus() {
+        return userStatus;
     }
 
-    public void setOnAttendance(boolean onAttendance) {
-        isOnAttendance = onAttendance;
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
+    }
+
+    public int compareTo(ActiveUser activeUser) {
+        UserStatus ownUserStatus = this.getUserStatus();
+        UserStatus otherUserStatus = activeUser.getUserStatus();
+        if (ownUserStatus == UserStatus.AWAY && otherUserStatus == UserStatus.AWAY )
+            return 0;
+        if (ownUserStatus == UserStatus.AWAY && otherUserStatus != UserStatus.AWAY)
+            return -1;
+        return 1;
     }
 }

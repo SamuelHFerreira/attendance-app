@@ -6,20 +6,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaopiz.kprogresshud.KProgressHUD;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
-import br.com.buildin.attendance.MainActivity;
 import br.com.buildin.attendance.adapter.ActiveUserAdapter;
 import br.com.buildin.attendance.model.ActiveUser;
-import br.com.buildin.attendance.model.FinishSessionForm;
+import br.com.buildin.attendance.model.SellerStatus;
+import br.com.buildin.attendance.model.StatusSessionForm;
 import br.com.buildin.attendance.model.UserResponse;
-import br.com.buildin.attendance.service.body.LoginBody;
+import br.com.buildin.attendance.model.UserStatus;
+import br.com.buildin.attendance.service.body.SellerBody;
 import br.com.buildin.attendance.service.body.QueueBody;
 import br.com.buildin.attendance.service.body.StartQueueBody;
 import retrofit2.Call;
@@ -47,7 +46,7 @@ public class AttendanceService {
     }
 
     public boolean loginOrCreateUser(String name, String password) {
-        Call<Void> call = this.service.createOrLogin(new LoginBody(name, password));
+        Call<Void> call = this.service.createOrLogin(new SellerBody(name, password));
         try {
             Response<Void> response = call.execute();
             if (response.body() != null)
@@ -59,6 +58,38 @@ public class AttendanceService {
         return false;
     }
 
+    public void updateSeller(Long sellerId, final SellerBody newSellerBodyStatus, final ActiveUserAdapter adapter, final View view, final Integer positionItem) {
+        Call<Void> call = this.service.updateSeller(sellerId, newSellerBodyStatus);
+        Callback<Void> callback = new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.body() != null) {
+                    Log.v(LOG, "sucess started attendance:" + response.body().toString());
+                }
+                UserStatus statusToUpdate = newSellerBodyStatus.getSellerStatus() == SellerStatus.ABSENT ? UserStatus.AWAY : UserStatus.IDLE;
+                adapter.getItem(positionItem).setUserStatus(statusToUpdate);
+                adapter.sort(new Comparator<ActiveUser>() {
+                    @Override
+                    public int compare(ActiveUser activeUser1, ActiveUser activeUser2) {
+                        return activeUser1.compareTo(activeUser2);
+                    }
+                });
+                adapter.swichStartButtonBackground(view, positionItem);
+                stopDefaultLoading();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                //Handle failure
+                Log.v(LOG, "error: " + t.toString());
+                stopDefaultLoading();
+            }
+
+        };
+        createDefaultLoading();
+        call.enqueue(callback);
+    }
+
     public void startAttendance(Long attendanceId, final ActiveUserAdapter adapter, final View view, final Integer positionItem) {
         Call<Void> call = this.service.startAttendance(new StartQueueBody(attendanceId));
         Callback<Void> callback = new Callback<Void>() {
@@ -67,7 +98,7 @@ public class AttendanceService {
                 if (response.body() != null) {
                     Log.v(LOG, "sucess started attendance:" + response.body().toString());
                 }
-                adapter.getItem(positionItem).setOnAttendance(true);
+                adapter.getItem(positionItem).setUserStatus(UserStatus.IN_ATTENDANCE);
                 adapter.swichStartButtonBackground(view, positionItem);
                 stopDefaultLoading();
             }
@@ -106,8 +137,8 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    public void finishSession(Long sellerId, FinishSessionForm form) {
-        Call<Void> call = this.service.finishSession(sellerId, form);
+    public void finishSession(Long sellerId, StatusSessionForm form) {
+        Call<Void> call = this.service.changeQueueStatus(sellerId, form);
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -160,7 +191,7 @@ public class AttendanceService {
             public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
                 if (response.body() != null)
                     for (UserResponse userResponse : response.body()) {
-                        activeUsers.add(new ActiveUser(userResponse.getName(), System.currentTimeMillis(), userResponse.getId(), false));
+                        activeUsers.add(new ActiveUser(userResponse.getName(), System.currentTimeMillis(), userResponse.getId(), UserStatus.IDLE));
                     }
                 listview.setAdapter(adapter);
                 listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {

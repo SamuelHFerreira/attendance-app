@@ -55,8 +55,16 @@
         android:layout_width="50dip"
         android:layout_height="50dip"
         android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/wait_attendance"
+        android:layout_toStartOf="@+id/wait_attendance" />
+
+    <Button
+        android:id="@+id/wait_attendance"
+        android:background="@drawable/ic_time_wait"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/remove_user"
         android:layout_toStartOf="@+id/remove_user" />
-
 
 </RelativeLayout>

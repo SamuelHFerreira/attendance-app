@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 /**
  * Created by samuelferreira on 29/12/16.
  */
-public class FinishSessionForm implements Serializable {
+public class StatusSessionForm implements Serializable {
     private static final long serialVersionUID = 1225592620332165699L;
 
     private boolean hasBoughtSomething;
@@ -14,6 +14,8 @@ public class FinishSessionForm implements Serializable {
     private BigDecimal purchaseValue;
     private Integer sessionTimeSeconds;
     private String description;
+
+    private AttendanceStatus status;
 
     public String getDescription() {
         return description;
@@ -53,5 +55,13 @@ public class FinishSessionForm implements Serializable {
 
     public void setSessionTimeSeconds(Integer sessionTimeSeconds) {
         this.sessionTimeSeconds = sessionTimeSeconds;
+    }
+
+    public AttendanceStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AttendanceStatus status) {
+        this.status = status;
     }
 }

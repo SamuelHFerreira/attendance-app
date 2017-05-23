@@ -2,10 +2,10 @@ package br.com.buildin.attendance.service;
 
 import java.util.List;
 
-import br.com.buildin.attendance.model.FinishSessionForm;
+import br.com.buildin.attendance.model.StatusSessionForm;
 import br.com.buildin.attendance.model.UserResponse;
 import br.com.buildin.attendance.service.body.QueueBody;
-import br.com.buildin.attendance.service.body.LoginBody;
+import br.com.buildin.attendance.service.body.SellerBody;
 import br.com.buildin.attendance.service.body.StartQueueBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -25,10 +25,10 @@ public interface QueueService {
     Call<List<UserResponse>> listQueuedUsers();
 
     @POST("seller")
-    Call<Void> createOrLogin(@Body LoginBody loginBody);
+    Call<Void> createOrLogin(@Body SellerBody loginBody);
 
     @PUT("seller/{sellerId}")
-    Call<Void> updateSeller(@Path("sellerId") String sellerId, @Body LoginBody loginBody);
+    Call<Void> updateSeller(@Path("sellerId") Long sellerId, @Body SellerBody sellerBody);
 
     // TODO get queue data
 
@@ -42,9 +42,6 @@ public interface QueueService {
     Call<Void> startAttendance(@Body StartQueueBody attendanceId);
 
     @PUT("attendance/{sellerId}")
-    Call<Void> finishSession(@Path("sellerId") Long sellerId, @Body FinishSessionForm form);
-
-    @DELETE("attendance/{attendanceId}")
-    Call<Void> logout(@Path("attendanceId") Long attendanceId);
+    Call<Void> changeQueueStatus(@Path("sellerId") Long sellerId, @Body StatusSessionForm form);
 
 }
