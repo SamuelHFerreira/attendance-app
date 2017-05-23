@@ -159,7 +159,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 form.setHasTestedProduct(testedProductCheckBox.isChecked());
                 form.setPurchaseValue(parseString(finalPurchaseText.getText().toString()));
 
-                AttendanceService.instance(parent.getContext()).finishSession(form);
+                AttendanceService.instance(parent.getContext()).finishSession(getItem(position).getId(), form);
                 getItem(position).setOnAttendance(false);
                 swichStartButtonBackground(view, position);
             }
@@ -181,9 +181,7 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     }
 
     public void removeVendorButtonHandler(View view, ViewGroup parent, int position) {
-//        AttendanceService.instance(parent.getContext()).logoutUser(getItem(position).getId());
-        //TODO  reloadList
-
+        AttendanceService.instance(parent.getContext()).logoutUser(getItem(position).getId(), this, position);
     }
 
     private BigDecimal parseString(String value) {

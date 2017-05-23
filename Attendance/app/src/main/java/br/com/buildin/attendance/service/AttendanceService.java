@@ -106,8 +106,8 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    public void finishSession(FinishSessionForm form) {
-        Call<Void> call = this.service.removeUserOfQueue(form.getDescription());
+    public void finishSession(Long sellerId, FinishSessionForm form) {
+        Call<Void> call = this.service.finishSession(sellerId, form);
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -128,14 +128,16 @@ public class AttendanceService {
         call.enqueue(callback);
     }
 
-    public void logoutUser(Long sellerId) {
-        Call<Void> call = this.service.removeUserOfQueue(sellerId.toString());
+    public void logoutUser(Long sellerId, final ActiveUserAdapter adapter, final Integer positionItem) {
+        Call<Void> call = this.service.removeUserOfQueue(sellerId);
         Callback<Void> callback = new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Log.v(LOG, "sucess on remove");
                 }
+                adapter.remove(adapter.getItem(positionItem));
+                adapter.notifyDataSetChanged();
                 stopDefaultLoading();
             }
 

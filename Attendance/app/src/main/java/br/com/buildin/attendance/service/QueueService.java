@@ -36,14 +36,13 @@ public interface QueueService {
     Call<Void> addUserToQueue(@Body QueueBody queueBody);
 
     @DELETE("queue/seller/{sellerId}")
-    Call<Void> removeUserOfQueue(@Path("sellerId") String sellerId);
+    Call<Void> removeUserOfQueue(@Path("sellerId") Long sellerId);
 
     @POST("attendance")
     Call<Void> startAttendance(@Body StartQueueBody attendanceId);
 
-    // body un...
-//    @DELETE("attendance")
-//    Call<Void> finishSession(@Body FinishSessionForm form);
+    @PUT("attendance/{sellerId}")
+    Call<Void> finishSession(@Path("sellerId") Long sellerId, @Body FinishSessionForm form);
 
     @DELETE("attendance/{attendanceId}")
     Call<Void> logout(@Path("attendanceId") Long attendanceId);
