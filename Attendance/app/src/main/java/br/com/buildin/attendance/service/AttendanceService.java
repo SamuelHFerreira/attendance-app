@@ -74,7 +74,7 @@ public class AttendanceService {
                         return activeUser1.compareTo(activeUser2);
                     }
                 });
-                adapter.swichStartButtonBackground(view, positionItem);
+                adapter.updateTimeWaitInterface(view, positionItem);
                 stopDefaultLoading();
             }
 

@@ -123,15 +123,18 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
     }
 
     public void swichStartButtonBackground(View finishSessionButton, Integer positionItem) {
-        boolean shouldEnableButton = true;
         if (getItem(positionItem).getUserStatus() == UserStatus.IN_ATTENDANCE)
             finishSessionButton.setBackgroundResource(R.drawable.ic_finish_attendance);
         if (getItem(positionItem).getUserStatus() == UserStatus.IDLE)
             finishSessionButton.setBackgroundResource(R.drawable.ic_start_attendance);
+    }
+
+    public void updateTimeWaitInterface(View timeWaitButton, Integer positionItem) {
+        View finishSessionButton = views.get(positionItem).findViewById(R.id.finish_attendance);
         if (getItem(positionItem).getUserStatus() == UserStatus.AWAY)
-            shouldEnableButton = finishSessionButton.isEnabled() ? false : true ;
-//        finishSessionButton.setActivated(shouldEnableButton);
-//        finishSessionButton.setEnabled(shouldEnableButton);
+            finishSessionButton.setVisibility(View.GONE);
+        else
+            finishSessionButton.setVisibility(View.VISIBLE);
     }
 
     public String getTimeCounterValue(int position) {
