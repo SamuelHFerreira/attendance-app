@@ -88,7 +88,6 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 public void onClick(View v) {
                     sessionButtonHandler(v, parentView, positionItem);
                     swichStartButtonBackground(finishSessionButton, positionItem);
-
                 }
             });
 
@@ -96,7 +95,6 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 @Override
                 public void onClick(View v) {
                     removeVendorButtonHandler(v, parentView, positionItem);
-
                 }
             });
 
@@ -104,7 +102,6 @@ public class ActiveUserAdapter extends ArrayAdapter<ActiveUser> {
                 @Override
                 public void onClick(View v) {
                     timeWaitButtonHandler(v, parentView, positionItem);
-
                 }
             });
 

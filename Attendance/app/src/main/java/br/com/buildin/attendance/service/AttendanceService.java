@@ -99,6 +99,7 @@ public class AttendanceService {
                     Log.v(LOG, "sucess started attendance:" + response.body().toString());
                 }
                 adapter.getItem(positionItem).setUserStatus(UserStatus.IN_ATTENDANCE);
+                adapter.getItem(positionItem).setStartTimestamp(System.currentTimeMillis());
                 adapter.swichStartButtonBackground(view, positionItem);
                 stopDefaultLoading();
             }
