@@ -12,6 +12,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -23,23 +24,27 @@ public interface QueueService {
     @GET("sellers")
     Call<List<UserResponse>> listQueuedUsers();
 
-    @POST("seller/create")
+    @POST("seller")
     Call<Void> createOrLogin(@Body LoginBody loginBody);
 
-    @POST("start-attendance")
-    Call<Void> startAttendance(@Body StartQueueBody attendanceId);
+    @PUT("seller/{sellerId}")
+    Call<Void> updateSeller(@Path("sellerId") String sellerId, @Body LoginBody loginBody);
 
-    @POST("queue")
+    // TODO get queue data
+
+    @POST("queue/seller")
     Call<Void> addUserToQueue(@Body QueueBody queueBody);
 
-    @DELETE("queue")
-    Call<Void> removeUserOfQueue(@Body QueueBody queueBody);
+    @DELETE("queue/seller/{sellerId}")
+    Call<Void> removeUserOfQueue(@Path("sellerId") String sellerId);
 
-    @POST("close-attendance")
+    @POST("attendance")
+    Call<Void> startAttendance(@Body StartQueueBody attendanceId);
+
+    @DELETE("attendance")
     Call<Void> finishSession(@Body FinishSessionForm form);
 
-    @GET("seller/to-leave/{attendanceId}")
-    Call<Void> pauseAttendanceQueue(@Path("attendanceId") Long attendanceId);
+    @GET("attendance/{attendanceId}")
+    Call<Void> logout(@Path("attendanceId") Long attendanceId);
 
-//    private static final String ATTENDANCE_DETAIL_ENDPOINT = "/attendance/by-user"; 
 }
